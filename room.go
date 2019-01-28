@@ -7,12 +7,6 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-func init() {
-	r := newRoom()
-	http.Handle("/room", r)
-	go r.run()
-}
-
 type room struct {
 	forward chan []byte
 	join    chan *client
