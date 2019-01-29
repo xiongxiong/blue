@@ -7,12 +7,20 @@ import (
 	"net/http"
 	"path/filepath"
 	"sync"
+	"time"
 
 	"github.com/stretchr/gomniauth"
 	"github.com/stretchr/gomniauth/providers/facebook"
 	"github.com/stretchr/gomniauth/providers/github"
 	"github.com/stretchr/gomniauth/providers/google"
+	"github.com/stretchr/objx"
 )
+
+type message struct {
+	Name    string
+	Message string
+	When    time.Time
+}
 
 type templateHandler struct {
 	once     sync.Once
