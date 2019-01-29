@@ -19,9 +19,10 @@ import (
 )
 
 type message struct {
-	Name    string
-	Message string
-	When    time.Time
+	Name      string
+	Message   string
+	When      time.Time
+	AvatarURL string
 }
 
 type templateHandler struct {
@@ -54,12 +55,22 @@ func main() {
 		google.New("key", "secret", "http://localhost:8080/auth/callback/google"),
 	)
 
-	r := newRoom()
+	r := newRoom(UseGravatar)
 	r.tracer = trace.New(os.Stdout)
 	http.Handle("/room", r)
 	http.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"}))
 	http.Handle("/login", &templateHandler{filename: "login.html"})
 	http.HandleFunc("/auth/", loginHandler)
+	http.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) {
+		http.SetCookie(w, &http.Cookie{
+			Name:   "auth",
+			Value:  "",
+			Path:   "/",
+			MaxAge: -1,
+		})
+		w.Header().Set("Location", "/chat")
+		w.WriteHeader(http.StatusTemporaryRedirect)
+	})
 	go r.run()
 	log.Println("Starting web server on", *addr)
 	if err := http.ListenAndServe(*addr, nil); err != nil {
