@@ -1,11 +1,7 @@
 package main
 
 import (
-	"crypto/md5"
 	"errors"
-	"fmt"
-	"io"
-	"strings"
 )
 
 var ErrNoAvatarURL = errors.New("chat: Unable to get an avatar URL.")
@@ -37,17 +33,15 @@ type GravatarAvatar struct{}
 var UseGravatar GravatarAvatar
 
 func (GravatarAvatar) GetAvatarURL(c *client) (string, error) {
-	email, ok := c.userData["email"]
+	userid, ok := c.userData["userid"]
 	if !ok {
 		return "", ErrNoAvatarURL
 	}
 
-	emailStr, ok := email.(string)
+	useridStr, ok := userid.(string)
 	if !ok {
 		return "", ErrNoAvatarURL
 	}
 
-	m := md5.New()
-	io.WriteString(m, strings.ToLower(emailStr))
-	return fmt.Sprintf("//www.gravatar.com/avatar/%x", m.Sum(nil)), nil
+	return "//www.gravatar.com/avatar/" + useridStr, nil
 }
