@@ -1,10 +1,12 @@
 package main
 
 import (
+	"blue/trace"
 	"flag"
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 	"sync"
 	"time"
@@ -45,15 +47,15 @@ func main() {
 	addr := flag.String("addr", ":8080", "The addr of the application.")
 	flag.Parse()
 
-	gomniauth.SetSecurityKey("PUT YOU AUTH KEY HERE")
+	gomniauth.SetSecurityKey("blueprints chat")
 	gomniauth.WithProviders(
 		facebook.New("key", "secret", "http://localhost:8080/auth/callback/facebook"),
-		github.New("key", "secret", "http://localhost:8080/auth/callback/github"),
+		github.New("673b1f6f2559b6575606", "56e28a434011f33805d8208ba18655c00e625b88", "http://localhost:8080/auth/callback/github"),
 		google.New("key", "secret", "http://localhost:8080/auth/callback/google"),
 	)
 
 	r := newRoom()
-	// r.tracer = trace.New(os.Stdout)
+	r.tracer = trace.New(os.Stdout)
 	http.Handle("/room", r)
 	http.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"}))
 	http.Handle("/login", &templateHandler{filename: "login.html"})
