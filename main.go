@@ -18,6 +18,12 @@ import (
 	"github.com/stretchr/objx"
 )
 
+var avatars Avatar = TryAvatars{
+	UseFileSystemAvatar,
+	UseAuthAvatar,
+	UseGravatar,
+}
+
 type message struct {
 	Name      string
 	Message   string
@@ -55,7 +61,7 @@ func main() {
 		google.New("key", "secret", "http://localhost:8080/auth/callback/google"),
 	)
 
-	r := newRoom(UseFileSystemAvatar)
+	r := newRoom()
 	r.tracer = trace.New(os.Stdout)
 	http.Handle("/room", r)
 	http.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"}))
